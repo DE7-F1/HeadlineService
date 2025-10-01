@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'news_project.analytics',  # 여기에 'news.analytics'가 등록되어 있어야 합니다.
+    
 ]
 
 MIDDLEWARE = [

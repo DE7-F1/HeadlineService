@@ -2,7 +2,7 @@ from datetime import date
 from collections import Counter
 import json
 from konlpy.tag import Okt # 한국어 형태소 분석기 (설치 필요)
-from django.db.models import Q
+from django.db.models import Q, Min, Max
 
 from ..models import News, Publisher, WordCloudResult
 
@@ -19,7 +19,7 @@ def generate_word_frequencies(start_date: date=None, end_date: date=None, select
     
     filters= Q()
     if selected_publisher_ids:
-        filters &= Q(newspaper_id__in=selected_publisher_ids)
+        filters &= Q(publisher_id__in=selected_publisher_ids)
         
     if start_date and end_date:# start_date와 end_date가 모두 제공된 경우에만 필터링
         filters &= Q(published_date__range=(start_date, end_date))
@@ -74,7 +74,7 @@ def generate_word_frequencies(start_date: date=None, end_date: date=None, select
     
     publishers_to_log=selected_publisher_ids
     if not selected_publisher_ids:
-        publishers_to_log=News.objects.all().values_list('id', flat=True)
+        publishers_to_log=Publisher.objects.all().values_list('id', flat=True)
     # 5. WordCloudResult 테이블에 결과 저장
     result_obj = WordCloudResult.objects.create(
         start_date=final_start_date,

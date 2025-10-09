@@ -91,6 +91,10 @@ def crawl_youtube_data(request=None, crawl_until=7):
 
     urls = [
         "https://www.youtube.com/@MBCNEWS11/videos",
+        "https://www.youtube.com/@sbsnews8/videos",
+        "https://www.youtube.com/@newskbs/videos",
+        "https://www.youtube.com/@jtbc_news/videos",
+        "https://www.youtube.com/@ytnnews24/videos",
     ]
 
     try:

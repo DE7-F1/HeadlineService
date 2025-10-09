@@ -185,33 +185,7 @@ def crawl_youtube_data(request=None, crawl_until=7):
                 print("비디오 컨테이너를 찾을 수 없습니다.")
                 continue
 
-            # 채널명 추출 (더 정확한 선택자들)
-            channel_name = "Unknown Channel"  # 기본값
-            channel_selectors = [
-                "ytd-channel-name #text",
-                "yt-formatted-string#text:not([aria-label*='Skip'])",
-                "#channel-name #text",
-                "a#channel-name #text",
-                "#owner-text a",
-                "ytd-video-owner-renderer #text"
-            ]
-
-            for selector in channel_selectors:
-                try:
-                    channel_elements = driver.find_elements(By.CSS_SELECTOR, selector)
-                    for elem in channel_elements:
-                        text = elem.text.strip()
-                        if text and 'skip' not in text.lower() and 'navigation' not in text.lower():
-                            channel_name = text
-                            print(f"채널명 추출 성공: {channel_name} (selector: {selector})")
-                            break
-                    if channel_name != "Unknown Channel":
-                        break
-                except:
-                    continue
-
-            print(f"최종 채널명: {channel_name}")
-
+            channel_name = driver.find_element(By.CSS_SELECTOR, "h1.dynamicTextViewModelH1 span.yt-core-attributed-string").text.strip()
             processed_count = 0
 
             # 모든 비디오 처리 (crawl_until 날짜 조건에 맞는 것만)

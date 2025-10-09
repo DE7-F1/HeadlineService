@@ -47,20 +47,7 @@ jobs:
       run: |
         python news_project/manage.py makemigrations
         python news_project/manage.py migrate
-        
-        # Django 서버를 백그라운드에서 실행
-        cd news_project
-        python manage.py runserver 127.0.0.1:8000 &
-        SERVER_PID=$!
-        
-        # 서버 시작 대기
-        sleep 10
-        
-        # 크롤링 실행
-        python manage.py crawl_youtube
-        
-        # 서버 종료
-        kill $SERVER_PID
+        python news_project/manage.py crawl_youtube
 
         
     - name: Commit and Push

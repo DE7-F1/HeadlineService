@@ -48,6 +48,7 @@ jobs:
         python news_project/manage.py makemigrations
         python news_project/manage.py migrate
         python news_project/manage.py crawl_youtube
+        python news_project/news/naver_crawler.py
 
         
     - name: Commit and Push

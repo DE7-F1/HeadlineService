@@ -25,7 +25,7 @@ def clean_title(title):
 # Selenium 드라이버 설정
 def get_driver():
     options = Options()
-    options.add_argument("--headless")  # 브라우저 없이 실행
+    options.add_argument("--headless")  
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
 
@@ -40,7 +40,6 @@ def get_driver():
 
 def post_to_backend(news_obj):
     backend_url = os.environ.get('BACKEND_URL', 'http://127.0.0.1:8000/news/headline/')
-    
     try:
         data = {    
             "title": news_obj.title,
@@ -48,7 +47,7 @@ def post_to_backend(news_obj):
             "url": news_obj.url,
             "published_date": news_obj.published_date.isoformat(),  
             "view_count": news_obj.view_count,
-            "crawled_at": news_obj.crawled_at.isoformat()  #ISO 문자열
+            "crawled_at": news_obj.crawled_at.isoformat()  
         }
 
         response = requests.post(
@@ -87,13 +86,10 @@ def crawl_naver_ranking(days=7, top_n=20):
 
         try:
             boxes = driver.find_elements(By.CSS_SELECTOR, ".rankingnews_box")
-
-
             for box in boxes:
                 try:
                     publisher_name = box.find_element(By.CLASS_NAME, "rankingnews_name").text.strip()
                     publisher, _ = Publisher.objects.get_or_create(name=publisher_name)
-
                     articles = box.find_elements(By.CSS_SELECTOR, "ul.rankingnews_list li")[:top_n]
 
                     for article in articles:
@@ -103,7 +99,7 @@ def crawl_naver_ranking(days=7, top_n=20):
                             href = link.get_attribute("href")
 
                             # 중복 뉴스는 건너뜀
-                            if not title or Headline.objects.filter(url=href).exists():
+                            if not title or not href:
                                 continue
 
                             # 상세 페이지 접속 후 발행일 추출
@@ -114,30 +110,33 @@ def crawl_naver_ranking(days=7, top_n=20):
 
                             try:
                                 date_el = driver.find_element(
-                                    By.CSS_SELECTOR, "span.media_end_head_info_datestamp_time._ARTICLE_DATE_TIME"
+                                    By.CSS_SELECTOR, 
+                                    "span.media_end_head_info_datestamp_time._ARTICLE_DATE_TIME"
                                 )
                                 published_str = date_el.get_attribute("data-date-time")
                                 published_date = timezone.make_aware(
                                     datetime.strptime(published_str, "%Y-%m-%d %H:%M:%S")
                                 )   
                             except:
-                                published_date = target_date #실패 시 target_date로 fallback
+                                published_date = timezone.make_aware(target_date) #실패 시 target_date로 fallback
 
                             driver.close()
                             driver.switch_to.window(driver.window_handles[0])
 
                             # DB에 저장
-                            headline_obj = Headline.objects.create(
-                                publisher=publisher,
-                                title=title,
+                            headline_obj, created = Headline.objects.update_or_create(
                                 url=href,
-                                published_date=published_date.date(),
-                                crawled_at=timezone.now(),
-                                view_count=0
+                                defaults={
+                                "publisher":publisher,
+                                "title":title,
+                                "published_date":published_date.date(),
+                                "crawled_at":timezone.now(),
+                                "view_count":0
+                                }
                             )
 
                             # API POST
-                            post_to_backend(headline_obj)
+                            #post_to_backend(headline_obj)
 
                             collected_articles.append({
                                 "title": title,

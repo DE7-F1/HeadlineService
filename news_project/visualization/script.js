@@ -1,12 +1,5 @@
-// API 기본 URL 설정
-const API_BASE_URL = (() => {
-  // 개발환경: 127.0.0.1:8000 (백엔드 서버)
-  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-    return 'http://127.0.0.1:8000';
-  }
-  // 배포환경: 같은 IP의 8000번 포트 (백엔드 서버)
-  return `http://${window.location.hostname}:8000`;
-})();
+// API 기본 URL 설정 - Django 통합 서버 사용
+const API_BASE_URL = '';
 
 async function fetchNews(keyword) {
   const titleEl = document.getElementById('results-title');

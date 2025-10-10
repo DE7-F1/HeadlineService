@@ -1,0 +1,348 @@
+body {
+  font-family: sans-serif;
+  margin: 20px;
+}
+
+.topbar {
+  background: #fff !important;
+  box-shadow: none !important;
+}
+
+.topbar .navbar {
+  padding: 0.5rem 1rem;
+}
+
+
+.search-input {
+  width: 300px;
+}
+
+
+.page-title-section {
+  background: #f8f9fa;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 8px;
+}
+
+.page-title {
+  margin: 0;
+  color: #495057;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+
+.collapse-item.active {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  font-weight: 600;
+}
+
+.collapse-item:hover {
+  background-color: #f5f5f5;
+}
+
+.card-header {
+  background-color: #f0f2f7b7 !important;
+  color: #ffffff !important;
+  padding: 0.75rem 1.25rem !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+}
+
+.card-header .font-weight-bold {
+  color: #4072d6 !important;
+}
+
+
+.card-header::after {
+  content: "⋮" !important;
+  color: #666 !important;
+  font-size: 1.2rem !important;
+  position: absolute !important;
+  right: 1rem !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  cursor: pointer !important;
+  transition: color 0.2s ease !important;
+  z-index: 10 !important;
+}
+
+.card-header::after:hover {
+  color: #333 !important;
+}
+
+
+.card-header.py-3 {
+  padding: 0.75rem 1.25rem !important;
+  width: 100% !important;
+}
+
+
+.right-panel .card-header {
+  background-color: #f0f2f7b7 !important;
+  color: #ffffff !important;
+  padding: 0.75rem 1.25rem !important;
+  width: 100% !important;
+  margin: 0 !important;
+  border-radius: 0.35rem 0.35rem 0 0 !important;
+  border: none !important;
+}
+
+
+.card .card-header {
+  width: 100% !important;
+  max-width: 100% !important;
+  flex: 1 !important;
+}
+
+
+.right-panel.card {
+  padding: 0 !important;
+  margin: 0 !important;
+  margin-top: 3.5rem !important;
+}
+
+.right-panel .card-header {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 1.25rem !important;
+  padding-right: 1.25rem !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+
+#news-list-container {
+  padding: 0 1.25rem !important;
+}
+
+#news-list-container li {
+  margin-bottom: 0.75rem !important;
+  padding-left: 1.5rem !important;
+  position: relative !important;
+  line-height: 1.5 !important;
+}
+
+#news-list-container li::before {
+  content: "●" !important;
+  color: #2a3a75 !important;
+  font-size: 0.8rem !important;
+  position: absolute !important;
+  left: 0 !important;
+  top: 0.4rem !important;
+}
+
+#news-list-container li a {
+  color: #1722e3 !important;
+  text-decoration: none !important;
+  display: block !important;
+  padding: 0.25rem 0 !important;
+  transition: color 0.2s ease !important;
+}
+
+#news-list-container li a:hover {
+  color: #1a2a65 !important;
+  text-decoration: underline !important;
+}
+.app-search {
+  margin-top: 40px; 
+  gap: 8px;
+}
+
+.app-search-input {
+  border: 1px solid #cfd3d8;
+  border-right: 0;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.app-search-btn {
+  background-color: #2a3a75;
+  color: #fff;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.search-divider {
+  height: 1px;
+  background: #e6e8eb;
+  margin: 12px 0 8px;
+}
+
+.page-title {
+  margin-bottom: 16px;
+}
+
+.cloud-section {
+  background: #f5f6f7; 
+  border: 1px solid #eef0f2;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.app-title {
+  margin: 0;
+  font-size: 20px;
+  letter-spacing: 0.2px;
+}
+
+.search-bar {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0 16px;
+}
+
+#search-input {
+  flex: 1 1 auto;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+
+.container-fluid {
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+
+.col-lg-7 .card {
+  margin-left: 1rem;
+}
+
+
+.sidebar {
+  flex: 0 0 210px;
+  background: #2a3a75;
+  border: 1px solid #2a3a75;
+  border-radius: 8px;
+  padding: 10px;
+  margin-top: 50px;
+}
+
+.sidebar-title {
+  font-size: 14px;
+  margin: 0 0 8px;
+}
+
+.category-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.nav-link i {
+  margin-right: 8px !important;
+}
+
+.collapse-item i {
+  margin-right: 8px !important;
+}
+
+.main-panel {
+  flex: 0 0 auto;
+}
+
+.right-panel {
+  flex: 1 1 auto;
+  max-height: 500px;
+  overflow: auto;
+  padding: 8px 12px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  margin-top: 50px;
+}
+
+@media (max-width: 768px) {
+  .word-cloud-layout {
+    flex-direction: column;
+  }
+
+  .right-panel {
+    max-height: none;
+  }
+}
+
+.text-center {
+  text-align: center;
+}
+
+.controls {
+  margin-bottom: 20px;
+}
+
+.categories {
+  margin-top: 10px;
+}
+
+.word-cloud-container {
+  display: flex;
+  gap: 20px
+}
+
+.word-cloud-card {
+  width: 100%;
+}
+
+.word-cloud-title {
+  font-weight: bold;
+  font-size: 1.2em;
+  text-align: center;
+  text-decoration: underline;
+}
+
+#word-cloud-canvas-hover-box {
+  pointer-events: none;
+  position: absolute;
+  box-shadow: 0 0 200px 200px rgba(255, 255, 255, 0.5);
+  border-radius: 50px;
+  border-style: solid;
+  cursor: pointer;
+}
+
+#word-cloud-html > span {
+    transition: text-shadow 1s ease, opacity 1s ease;
+    -webkit-transition: text-shadow 1s ease, opacity 1s ease;
+    -ms-transition: text-shadow 1s ease, opacity 1s ease;
+  }
+/* Compose transforms using CSS variables: mouse offset + float + optional scale */
+@property --float {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+#word-cloud-html .word-cloud-item {
+  opacity: 0;
+  --mx: 0px;
+  --my: 0px;
+  --float: 0px;
+  transform: translate(var(--mx), var(--my)) translateY(var(--float)) scale(0.96);
+  will-change: transform;
+  animation: floatY 6s ease-in-out infinite alternate;
+  animation-delay: calc(var(--i, 0) * 120ms);
+}
+
+#word-cloud-html.entered .word-cloud-item {
+  opacity: 1;
+  transform: translate(var(--mx), var(--my)) translateY(var(--float)) scale(1);
+}
+
+@keyframes floatY {
+  from { --float: -3px; }
+  to   { --float: 3px; }
+}
+
+
+#word-cloud-html > span:hover {
+    text-shadow: 0 0 10px, 0 0 10px #fff, 0 0 10px #fff, 0 0 10px #fff !important;
+    opacity: 0.5 !important;
+  }
+
+
+ 

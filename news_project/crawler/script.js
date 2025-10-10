@@ -1,8 +1,8 @@
-// API 기본 URL 설정
+// API 기본 URL 설정 (환경에 따라 자동 감지)
 const API_BASE_URL = (() => {
-  // 개발환경: 127.0.0.1:8000 (백엔드 서버)
+  // 개발환경: 127.0.0.1:8004 (백엔드 서버)
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-    return 'http://127.0.0.1:8000';
+    return 'http://127.0.0.1:8004';
   }
   // 배포환경: 같은 도메인의 백엔드 서버
   return window.location.origin;
@@ -18,6 +18,7 @@ async function fetchNews(keyword) {
   listEl.hidden  = false;
   if (panelEl) panelEl.hidden = false;
 
+  // 로딩 상태 표시
   listEl.innerHTML = '<li>뉴스를 불러오는 중...</li>';
 
   try {
@@ -46,10 +47,12 @@ async function fetchNews(keyword) {
   }
 }
 
+// 워드클라우드 데이터를 API에서 가져와서 렌더링
 async function drawWordCloud() {
   const wordCloudElement = document.getElementById('word-cloud-html');
   if (!wordCloudElement) return;
 
+  // 로딩 상태 표시
   wordCloudElement.innerHTML = `<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666; flex-direction: column;">
     <div class="spinner-border text-primary mb-3" role="status">
       <span class="sr-only">로딩중...</span>
@@ -68,8 +71,10 @@ async function drawWordCloud() {
       return;
     }
     
+    // API 응답 데이터를 WordCloud 형식으로 변환
     const words = data.data.map(item => [item.text, item.value]);
 
+    // WordCloud 렌더링
     WordCloud(wordCloudElement, {
       list: words,
       classes: 'word-cloud-item',
@@ -80,8 +85,10 @@ async function drawWordCloud() {
       shrinkToFit: true
     });
 
+    // 이벤트 리스너 설정
     setupWordCloudEvents();
     
+    // 캐싱 정보 표시
     if (data.result_id) {
       console.log(`워드클라우드 결과 ID: ${data.result_id} (캐시됨)`);
     }
@@ -106,7 +113,7 @@ let currentFilters = {
 
 // 검색
 document.addEventListener('DOMContentLoaded', async () => {
-
+  // 언론사 데이터 먼저 로드
   await loadPublisherMapping();
   
   drawWordCloud();
@@ -137,6 +144,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  // 카테고리 필터
   setupCategoryFilters();
 });
 
@@ -150,8 +158,8 @@ function setupCategoryFilters() {
       const publisherId = item.getAttribute('data-publisher-id');
       const pressName = item.textContent.trim();
       currentFilters.publisherIds = [publisherId];
-      currentFilters.startDate = null; 
-      currentFilters.endDate = null; 
+      currentFilters.startDate = null; // 초기화
+      currentFilters.endDate = null; // 초기화
       filterWordCloud();
       updateActiveFilter('press', pressName);
     });
@@ -166,7 +174,7 @@ function setupCategoryFilters() {
       const dateRangeObj = getDateRange(dateRange);
       currentFilters.startDate = dateRangeObj.start_date;
       currentFilters.endDate = dateRangeObj.end_date;
-      currentFilters.publisherIds = null;
+      currentFilters.publisherIds = null; // 초기화
       filterWordCloud();
       updateActiveFilter('date', dateRange);
     });
@@ -193,6 +201,7 @@ async function filterWordCloud() {
   const wordCloudElement = document.getElementById('word-cloud-html');
   if (!wordCloudElement) return;
 
+  // 필터 설명
   let filterDesc = '';
   if (currentFilters.publisherIds) {
     const publisherNames = currentFilters.publisherIds.map(id => getPublisherName(id));
@@ -205,6 +214,7 @@ async function filterWordCloud() {
     filterDesc = '전체 뉴스';
   }
 
+  // 로딩 메세지
   wordCloudElement.innerHTML = `<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666; flex-direction: column;">
     <div class="spinner-border text-primary mb-3" role="status">
       <span class="sr-only">로딩중...</span>
@@ -213,6 +223,7 @@ async function filterWordCloud() {
   </div>`;
   
   try {
+    // API 파라미터 구성
     const params = new URLSearchParams();
     
     if (currentFilters.publisherIds) {
@@ -239,6 +250,7 @@ async function filterWordCloud() {
       return;
     }
     
+    // API 응답 데이터를 WordCloud 형식으로 변환
     const words = data.data.map(item => [item.text, item.value]);
     
     // WordCloud 렌더링
@@ -274,6 +286,7 @@ async function searchNews(searchTerm) {
   listEl.hidden = false;
   if (panelEl) panelEl.hidden = false;
 
+  // 로딩 상태 표시
   listEl.innerHTML = '<li>검색 중...</li>';
 
   try {
@@ -317,11 +330,12 @@ async function loadPublisherMapping() {
       });
       console.log('언론사 매핑 로드 완료:', publisherMapping);
       
-
+      // 동적으로 카테고리 생성
       updatePublisherCategories(data);
     }
   } catch (error) {
     console.error('언론사 데이터 로드 오류:', error);
+    // 기본값 설정
     publisherMapping = {
       '1': 'KBS',
       '2': 'SBS', 
@@ -332,11 +346,12 @@ async function loadPublisherMapping() {
   }
 }
 
-
+// 동적으로 언론사 카테고리 업데이트
 function updatePublisherCategories(publishers) {
   const pressContainer = document.querySelector('#collapsePress .collapse-inner');
   if (!pressContainer) return;
   
+  // 기존 카테고리 제거
   pressContainer.innerHTML = '';
   
   // 실제 DB 데이터로 카테고리 생성
@@ -353,12 +368,13 @@ function updatePublisherCategories(publishers) {
   setupCategoryFilters();
 }
 
+// 헬퍼 함수들 - 실제 팀 DB에 맞게 수정 완료
 function getPublisherName(publisherId) {
   return publisherMapping[publisherId] || 'Unknown';
 }
 
 function getDateRange(dateRange) {
-  // 오늘 날짜 계산
+  // 로컬 시간대 기준으로 오늘 날짜 계산
   const today = new Date();
   const year = today.getFullYear();
   const month = String(today.getMonth() + 1).padStart(2, '0');
@@ -372,7 +388,7 @@ function getDateRange(dateRange) {
     };
   } else if (dateRange === '주간') {
     const weekAgo = new Date(today);
-    weekAgo.setDate(weekAgo.getDate() - 6); 
+    weekAgo.setDate(weekAgo.getDate() - 6); // 7일이 아닌 6일로 수정 (오늘 포함해서 7일)
     const weekAgoYear = weekAgo.getFullYear();
     const weekAgoMonth = String(weekAgo.getMonth() + 1).padStart(2, '0');
     const weekAgoDay = String(weekAgo.getDate()).padStart(2, '0');

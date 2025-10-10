@@ -160,7 +160,7 @@ def crawl_naver_ranking(days=7, top_n=20):
     print("전체 크롤링 및 POST 완료")
     return collected_articles
 # 실행
-if __name__ == "__main__":
+if __name__ == "__main__": 
     crawl_naver_ranking(days=7, top_n=20)
 
 def crawl():

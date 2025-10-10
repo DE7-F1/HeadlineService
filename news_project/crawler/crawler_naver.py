@@ -170,20 +170,10 @@ def crawl_naver_ranking(days=7, top_n=20):
             except Exception as e:
                 print("박스 처리 오류:", e)
                 continue
-        # except Exception as e:
-        #     print("날짜 페이지 처리 오류:", e)
-        #     continue
-
+            
     driver.quit()
     print("전체 크롤링 및 POST 완료")
     return collected_articles
 # 실행
 if __name__ == "__main__": 
     crawl_naver_ranking(days=7, top_n=20)
-
-# def crawl():
-#     collected = crawl_naver_ranking(days=3, top_n=20)
-#     return {"status": "success", 
-#             "message": "네이버 뉴스 크롤링 완료",
-#             "items": collected
-#     }

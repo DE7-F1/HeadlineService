@@ -26,7 +26,7 @@
   <tr>
     <td style="text-align: center;">
       <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/%EC%83%9D%EC%84%B1.gif" alt="Image 1" style="width: 100%;">
-      <p>Login & Register</p>
+      <p>전체 기사, 전체 날짜 기반으로 생성</p>
     </td>
   </tr>
 </table>
@@ -38,7 +38,7 @@
   <tr>
     <td style="text-align: center;">
       <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/%ED%95%84%ED%84%B0%EB%A7%81%20-%20Clipchamp%EB%A1%9C%20%EC%A0%9C%EC%9E%91.gif" alt="Image 1" style="width: 100%;">
-      <p>Kiosk Step</p>
+      <p>t신문사, 날짜 따로 설정 가능 </p>
     </td>
   </tr>
 </table>
@@ -62,7 +62,7 @@
   <tr>
     <td style="text-align: center;">
       <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/%EA%B2%80%EC%83%89%EA%B8%B0%EB%8A%A5.gif" alt="Image 1" style="width: 100%; height: 260px;">
-      <p>Movie Step</p>
+      <p>원하는 키워드 따로 검색</p>
     </td>
   </tr>
 </table>

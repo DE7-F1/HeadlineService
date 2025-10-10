@@ -38,7 +38,7 @@
   <tr>
     <td style="text-align: center;">
       <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/%ED%95%84%ED%84%B0%EB%A7%81%20-%20Clipchamp%EB%A1%9C%20%EC%A0%9C%EC%9E%91.gif" alt="Image 1" style="width: 100%;">
-      <p>t신문사, 날짜 따로 설정 가능 </p>
+      <p>신문사, 날짜 따로 설정 가능 </p>
     </td>
   </tr>
 </table>

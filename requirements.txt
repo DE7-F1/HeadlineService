@@ -4,3 +4,4 @@ drf-yasg
 djangorestframework
 selenium
 webdriver_manager
+django-cors-headers

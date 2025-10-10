@@ -45,10 +45,11 @@ jobs:
 
     - name: Crawling
       run: |
+        export PYTHONPATH=$PYTHONPATH:$GITHUB_WORKSPACE/news_project
         python news_project/manage.py makemigrations
         python news_project/manage.py migrate
         python news_project/manage.py crawl_youtube
-        python news_project/news/naver_crawler.py
+        python news_project/manage.py crawl_naver
 
         
     - name: Commit and Push

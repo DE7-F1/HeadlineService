@@ -4,7 +4,7 @@
 ---
  
 ## <p align="center"> 🔔 1.Introduction 🔔 </p>
-##### 실시간 뉴스 트렌드 분석 및 시각화 서비스 
+#### 실시간 뉴스 트렌드 분석 및 시각화 서비스 
 
 ### 💡Motivation
 
@@ -19,52 +19,49 @@
 
 ## <p align="center"> 🔔 2. Explanation of "News Cloud" 🔔 </p>
 
-### 🍔 기사 실시간 수집 
+
+
+### 🔔 기사 워드클라우드 생성 
 <table style="width: 50%;">
   <tr>
     <td style="text-align: center;">
-      <img src="https://github.com/leeinsunny/orderattack_photo/blob/main/%E1%84%87%E1%85%A9%E1%84%82%E1%85%A5%E1%84%89%E1%85%B31.gif" alt="Image 1" style="width: 100%;">
-      <p>Bonus stage</p>
-      </td>
-      <td style="text-align: center;">
-      <img src="https://github.com/leeinsunny/orderattack_photo/blob/main/%E1%84%87%E1%85%A9%E1%84%82%E1%85%A5%E1%84%89%E1%85%B32.gif" alt="Image 1" style="width: 100%;">
-      <p>Bonus stage</p>
-    </td>
-  </tr>
-</table>
-
-### 🔔 기사 워드클라우드 생성 
-<table style="width: 40%;">
-  <tr>
-   <td style="text-align: center;">
-      <img src="https://github.com/leeinsunny/orderattack_photo/blob/main/%E1%84%92%E1%85%AC%E1%84%8B%E1%85%AF%E1%86%AB%E1%84%80%E1%85%A1%E1%84%8B%E1%85%B5%E1%86%B8.gif" alt="Image 1" style="width: 40%;">
+      <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/%EC%83%9D%EC%84%B1.gif" alt="Image 1" style="width: 100%;">
       <p>Login & Register</p>
     </td>
   </tr>
 </table>
 
+---
+
 ### 🍔 기사 신문사별/날짜별 필터링 
-<table style="width: 40%;">
+<table style="width: 50%;">
   <tr>
     <td style="text-align: center;">
-      <img src="https://github.com/leeinsunny/orderattack_photo/blob/main/%EC%9B%80%EC%A7%A4%20%ED%82%A4%EC%98%A4%EC%8A%A4%ED%81%AC%20%EC%84%B1%EA%B3%B5.gif" alt="Image 1" style="width: 100%;">
+      <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/%ED%95%84%ED%84%B0%EB%A7%81%20-%20Clipchamp%EB%A1%9C%20%EC%A0%9C%EC%9E%91.gif" alt="Image 1" style="width: 100%;">
       <p>Kiosk Step</p>
     </td>
-   <td style="text-align: center;">
-      <img src="https://github.com/leeinsunny/orderattack_photo/blob/main/%E1%84%8F%E1%85%B5%E1%84%8B%E1%85%A9%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B32.gif" alt="Image 2" style="width: 100%;">
-      <p>Kiosk Step</p>
-    </td>
+  </tr>
 </table>
 
-### 기사 키워드 검색 
-<table style="width: 40%;">
+---
+
+### 🍔 워드클라우드 클릭하여 기사 조회  
+<table style="width: 50%;">
   <tr>
     <td style="text-align: center;">
-      <img src="https://github.com/leeinsunny/orderattack_photo/blob/main/%EB%AC%B4%EB%B9%84%20%EC%9B%80%EC%A7%A4.gif" alt="Image 1" style="width: 100%;">
-      <p>Movie Step</p>
-    </td>
-   <td style="text-align: center;">
-      <img src="https://github.com/leeinsunny/orderattack_photo/blob/main/%EB%AC%B4%EB%B9%84%20%EC%84%B1%EA%B3%B5.gif" alt="Image 1" style="width: 100%;">
+      <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/%EA%B8%B0%EC%82%AC%20%EC%A1%B0%ED%9A%8C%20-%20Clipchamp%EB%A1%9C%20%EC%A0%9C%EC%9E%91.gif" alt="Image 1" style="width: 100%;">
+      <p>클릭하면 기사 원문 페이지와 연결</p>
+      </td>
+  </tr>
+</table>
+
+---
+
+### 🔔 기사 키워드 검색  
+<table style="width: 50%;">
+  <tr>
+    <td style="text-align: center;">
+      <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/%EA%B2%80%EC%83%89%EA%B8%B0%EB%8A%A5.gif" alt="Image 1" style="width: 100%; height: 260px;">
       <p>Movie Step</p>
     </td>
   </tr>
@@ -73,7 +70,7 @@
 ---
 
 ## <p align="center"> 🔔 3. Architecture 🔔 </p>
-<img width="1032" alt="오더어택 아키텍쳐" src="https://github.com/sally7788/NewsCloud_Photo/blob/main/%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98.PNG">
+<img width="1032" alt="News Cloud 아키텍쳐" src="https://github.com/sally7788/NewsCloud_Photo/blob/main/%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98.PNG">
 
 - 📱 FrontEnd
    <div style="text-align: left;">
@@ -100,7 +97,7 @@
     
 ---
 
-## <p align="center"> 🔔 6. Member 🔔 </p>
+## <p align="center"> 🔔 4. Member 🔔 </p>
 
 
 
@@ -110,82 +107,134 @@
 
 ---
 
-## <p align="center"> 🔔 7. Youtube & Material 🔔 </p>
-📌 You can see our solution's presentation => [Click Here!]링크)
+## <p align="center"> 🔔 5. Material 🔔 </p>
 
 
-발표자료 넣어야겠다..
-<!-- <table style="width: 100%;">
+<table style="width: 100%;">
     <tr>
-        <td style="text-align: center;"> 
-            <img src="https://github.com/leeinsunny/orderattack_photo/blob/main/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C1.PNG" alt="Image 1" style="width: 100%;">
+        <td style="text-align: center; width: 25%;"> 
+            <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/1.png" alt="Image 1" style="width: 100%;">
             <p>1</p> 
         </td>
-        <td style="text-align: center;"> 
-            <img src="https://github.com/leeinsunny/orderattack_photo/blob/main/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C2.PNG" alt="Image 2" style="width: 100%;">
+        <td style="text-align: center; width: 25%;"> 
+            <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/2.png" alt="Image 2" style="width: 100%;">
             <p>2</p> 
         </td>
-        <td style="text-align: center;"> 
-            <img src="https://github.com/leeinsunny/orderattack_photo/blob/main/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C3.PNG" alt="Image 3" style="width: 100%;">
-            <p>3</p>
+        <td style="text-align: center; width: 25%;"> 
+            <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/3.png" alt="Image 3" style="width: 100%;">
+            <p>3</p> 
         </td>
-        <td style="text-align: center;"> 
-            <img src="https://github.com/leeinsunny/orderattack_photo/blob/main/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C4.PNG" alt="Image 4" style="width: 100%;">
-            <p>4</p>
+        <td style="text-align: center; width: 25%;"> 
+            <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/4.png" alt="Image 4" style="width: 100%;">
+            <p>4</p> 
         </td>
     </tr>
     <tr>
-        <td style="text-align: center;"> 
-            <img src="https://github.com/leeinsunny/orderattack_photo/blob/main/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C5.PNG" alt="Image 5" style="width: 100%;">
+        <td style="text-align: center; width: 25%;"> 
+            <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/5.png" alt="Image 5" style="width: 100%;">
             <p>5</p> 
         </td>
-        <td style="text-align: center;"> 
-            <img src="https://github.com/leeinsunny/orderattack_photo/blob/main/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C6.PNG" alt="Image 6" style="width: 100%;">
+        <td style="text-align: center; width: 25%;"> 
+            <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/6.png" alt="Image 6" style="width: 100%;">
             <p>6</p> 
         </td>
-        <td style="text-align: center;"> 
-            <img src="https://github.com/leeinsunny/orderattack_photo/blob/main/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C7.PNG" alt="Image 7" style="width: 100%;">
-            <p>7</p>
+        <td style="text-align: center; width: 25%;"> 
+            <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/7.png" alt="Image 7" style="width: 100%;">
+            <p>7</p> 
         </td>
-        <td style="text-align: center;"> 
-            <img src="https://github.com/leeinsunny/orderattack_photo/blob/main/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C8.PNG" alt="Image 8" style="width: 100%;">
-            <p>8</p>
+        <td style="text-align: center; width: 25%;"> 
+            <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/8.png" alt="Image 8" style="width: 100%;">
+            <p>8</p> 
         </td>
     </tr>
     <tr>
-        <td style="text-align: center;"> 
-            <img src="https://github.com/leeinsunny/orderattack_photo/blob/main/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C9.PNG" alt="Image 9" style="width: 100%;">
+        <td style="text-align: center; width: 25%;"> 
+            <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/9.png" alt="Image 9" style="width: 100%;">
             <p>9</p> 
         </td>
-        <td style="text-align: center;"> 
-            <img src="https://github.com/leeinsunny/orderattack_photo/blob/main/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C10.PNG" alt="Image 10" style="width: 100%;">
+        <td style="text-align: center; width: 25%;"> 
+            <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/10.png" alt="Image 10" style="width: 100%;">
             <p>10</p> 
         </td>
-        <td style="text-align: center;"> 
-            <img src="https://github.com/leeinsunny/orderattack_photo/blob/main/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C11.PNG" alt="Image 11" style="width: 100%;">
-            <p>11</p>
+        <td style="text-align: center; width: 25%;"> 
+            <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/11.png" alt="Image 11" style="width: 100%;">
+            <p>11</p> 
         </td>
-        <td style="text-align: center;"> 
-            <img src="https://github.com/leeinsunny/orderattack_photo/blob/main/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C12.PNG" alt="Image 12" style="width: 100%;">
-            <p>12</p>
+        <td style="text-align: center; width: 25%;"> 
+            <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/12.png" alt="Image 12" style="width: 100%;">
+            <p>12</p> 
         </td>
     </tr>
     <tr>
-        <td style="text-align: center;"> 
-            <img src="https://github.com/leeinsunny/orderattack_photo/blob/main/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C13.PNG" alt="Image 13" style="width: 100%;">
+        <td style="text-align: center; width: 25%;"> 
+            <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/13.png" alt="Image 13" style="width: 100%;">
             <p>13</p> 
         </td>
-        <td style="text-align: center;"> 
-            <img src="https://github.com/leeinsunny/orderattack_photo/blob/main/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C14.PNG" alt="Image 14" style="width: 100%;">
+        <td style="text-align: center; width: 25%;"> 
+            <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/14.png" alt="Image 14" style="width: 100%;">
             <p>14</p> 
         </td>
-        <td style="text-align: center;"> 
-            <img src="https://github.com/leeinsunny/orderattack_photo/blob/main/%EC%8A%AC%EB%9D%BC%EC%9D%B4%EB%93%9C15.PNG" alt="Image 15" style="width: 100%;">
-            <p>15</p>
+        <td style="text-align: center; width: 25%;"> 
+            <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/15.png" alt="Image 15" style="width: 100%;">
+            <p>15</p> 
         </td>
-        <td style="text-align: center;"> 
-            <img src="" alt="" style="width: 100%;">
-            <p></p>
+        <td style="text-align: center; width: 25%;"> 
+            <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/16.png" alt="Image 16" style="width: 100%;">
+            <p>16</p> 
         </td>
     </tr>
-</table> -->
+    <tr>
+        <td style="text-align: center; width: 25%;"> 
+            <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/17.png" alt="Image 17" style="width: 100%;">
+            <p>17</p> 
+        </td>
+        <td style="text-align: center; width: 25%;"> 
+            <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/18.png" alt="Image 18" style="width: 100%;">
+            <p>18</p> 
+        </td>
+        <td style="text-align: center; width: 25%;"> 
+            <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/19.png" alt="Image 19" style="width: 100%;">
+            <p>19</p> 
+        </td>
+        <td style="text-align: center; width: 25%;"> 
+            <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/20.png" alt="Image 20" style="width: 100%;">
+            <p>20</p> 
+        </td>
+    </tr>
+    <tr>
+        <td style="text-align: center; width: 25%;"> 
+            <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/21.png" alt="Image 21" style="width: 100%;">
+            <p>21</p> 
+        </td>
+        <td style="text-align: center; width: 25%;"> 
+            <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/22.png" alt="Image 22" style="width: 100%;">
+            <p>22</p> 
+        </td>
+        <td style="text-align: center; width: 25%;"> 
+            <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/23.png" alt="Image 23" style="width: 100%;">
+            <p>23</p> 
+        </td>
+        <td style="text-align: center; width: 25%;"> 
+            <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/24.png" alt="Image 24" style="width: 100%;">
+            <p>24</p> 
+        </td>
+    </tr>
+    <tr>
+        <td style="text-align: center; width: 25%;"> 
+            <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/25.png" alt="Image 25" style="width: 100%;">
+            <p>25</p> 
+        </td>
+        <td style="text-align: center; width: 25%;"> 
+            <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/26.png" alt="Image 26" style="width: 100%;">
+            <p>26</p> 
+        </td>
+        <td style="text-align: center; width: 25%;"> 
+            <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/27.png" alt="Image 27" style="width: 100%;">
+            <p>27</p> 
+        </td>
+        <td style="text-align: center; width: 25%;"> 
+            <img src="https://github.com/sally7788/NewsCloud_Photo/blob/main/28.png" alt="Image 28" style="width: 100%;">
+            <p>28</p> 
+        </td>
+    </tr>
+</table>

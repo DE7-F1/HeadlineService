@@ -11,7 +11,7 @@ STOPWORDS = set([
     '뉴스', '기자', '오늘', '이슈', '속보', '있다', '것이다', '하다', '등', '이번', '그것', '지난', '합니다', '한다'
 ])
 
-def generate_word_frequencies(start_date: date=None, end_date: date=None, selected_publisher_ids: list=None):
+def generate_word_frequencies(start_date: str | None=None, end_date: str | None=None, selected_publisher_ids: list | None=None):
     """
     지정된 기간, 신문사 ID, 그리고 조회수(view_count)를 가중치로 사용하여
     단어 빈도수를 계산하고 WordCloudResult에 JSON 형태로 저장합니다.
@@ -21,19 +21,41 @@ def generate_word_frequencies(start_date: date=None, end_date: date=None, select
     filters= Q()
     if selected_publisher_ids:
         filters &= Q(publisher__in=selected_publisher_ids)
-        
-    if start_date and end_date:# start_date와 end_date가 모두 제공된 경우에만 필터링
-        try: 
-            end_date_obj  = datetime.strptime(end_date, '%Y-%m-%d')
-            adjusted_end_date = end_date_obj + timedelta(days=1)
-            filters &= Q(published_date__gte=start_date) & Q(published_date__lt=adjusted_end_date)
-        
-        except ValueError:
-            print(">> 날짜 형식이 올바르지 않습니다. YYYY-MM-DD 형식이어야 합니다.")
-            return None
     
-    # 1. 데이터 필터링 및 조회: title과 view_count를 함께 가져와야 가중치 적용이 가능합니다.
-    # view_count가 없는 경우를 대비해 기본값 0을 적용합니다.
+    start_date_obj = None
+    end_date_obj = None
+    
+    if start_date:
+        try:
+            start_date_obj = datetime.strptime(start_date, '%Y-%m-%d').date()
+        except ValueError:
+            print(">> 시작 날짜 형식이 올바르지 않습니다. YYYY-MM-DD 형식이어야 합니다.")
+            return None
+
+    # 2. end_date 파싱
+    if end_date:
+        try:
+            end_date_obj = datetime.strptime(end_date, '%Y-%m-%d').date()
+        except ValueError:
+            print(">> 종료 날짜 형식이 올바르지 않습니다. YYYY-MM-DD 형식이어야 합니다.")
+            return None
+            
+    # 3. 날짜 필터 적용 (4가지 경우 처리)
+    date_filters = Q()
+
+    if start_date_obj and end_date_obj:
+        
+        date_filters &= Q(published_date__range=(start_date_obj, end_date_obj))
+    elif start_date_obj:
+        
+        date_filters &= Q(published_date__gte=start_date_obj)
+    elif end_date_obj:
+        
+        date_filters &= Q(published_date__lte=end_date_obj)
+   
+
+    filters &= date_filters # 기존 filters에 날짜 필터 추가
+    
     headlines = Headline.objects.filter(filters).values('title', 'view_count', 'published_date') # 딕셔너리 형태로 조회
 
     if not headlines:
@@ -66,17 +88,22 @@ def generate_word_frequencies(start_date: date=None, end_date: date=None, select
         {'text': word, 'value': count} 
         for word, count in top_words
     ]
-    final_start_date = start_date
-    final_end_date = end_date
-    if not start_date or not end_date:
-        
-        date_range=headlines.aggregate(min_date=Min('published_date'), max_date=Max('published_date'))
-        final_start_date=date_range['min_date']
-        final_end_date=date_range['max_date']
+    final_start_date = None
+    final_end_date = None
     
-    publishers_to_log=selected_publisher_ids
+    if not start_date or not end_date:
+        # 이미 필터링된 headlines를 대상으로 min/max date를 구합니다.
+        date_range = Headline.objects.filter(filters).aggregate(min_date=Min('published_date'), max_date=Max('published_date'))
+        final_start_date = date_range['min_date']
+        final_end_date = date_range['max_date']
+    else:
+        # start_date, end_date가 string으로 제공되었다면 그대로 사용합니다.
+        final_start_date = start_date_obj # 이미 위의 try 블록에서 date 객체로 변환됨
+        final_end_date = end_date_obj
+        
+    publishers_to_log=selected_publisher_ids    
     if not selected_publisher_ids:
-        publishers_to_log=Publisher.objects.all().values_list('id', flat=True)
+        publishers_to_log = list(Publisher.objects.all().values_list('id', flat=True)) # 쿼리셋 대신 리스트로 변환
     # 5. WordCloudResult 테이블에 결과 저장
     result_obj = WordCloudResult.objects.create(
         start_date=final_start_date,
@@ -90,5 +117,3 @@ def generate_word_frequencies(start_date: date=None, end_date: date=None, select
     print(f">> WordCloud 가중치 결과 저장 완료. ID: {result_obj.id}. 기간: {final_start_date} ~ {final_end_date}")
     return result_obj
 
-# 사용 예시 (특정 신문사 1, 2, 3으로 2025-09-01부터 2025-09-30까지 실행)
-# generate_word_frequencies(date(2025, 9, 1), date(2025, 9, 30), [1, 2, 3])

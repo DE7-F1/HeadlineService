@@ -1,201 +1,490 @@
 from django.http import JsonResponse
-from django.http import HttpResponse
 from django.utils import timezone
 import datetime
 import time
 import re
-import requests
+import os
+
+# Django 설정 추가
+import django
+from django.conf import settings
+
+# Django 앱이 아직 설정되지 않았다면 설정
+if not settings.configured:
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'news_project.settings')
+    django.setup()
+
+# HeadlineSerializer import
+from news.serializers import HeadlineSerializer
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
 
-def crawl_youtube_data(request, crawl_until=7):
+
+def crawl_youtube_data(request=None, crawl_until=7):
     """
-    유튜브 링크로 접속해서 무한 스크롤을 하여 받아온 비디오 갯수만큼의 데이터를 크롤링
+    유튜브 링크로 접속해서 무한 스크롤을 하여 crawl_until 날짜까지의 데이터를 크롤링
     """
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")
-    driver = webdriver.Chrome(options=chrome_options)
-    
-    '''urls = [
+    chrome_options = Options() 
+    chrome_options.add_argument("--headless=new")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--window-size=1920,1080")
+    chrome_options.add_argument("--disable-extensions")
+    chrome_options.add_argument("--disable-web-security")
+    chrome_options.add_argument("--allow-running-insecure-content")
+    chrome_options.add_argument("--disable-background-timer-throttling")
+    chrome_options.add_argument("--disable-backgrounding-occluded-windows")
+    chrome_options.add_argument("--disable-renderer-backgrounding")
+    chrome_options.add_argument("--disable-features=TranslateUI")
+    chrome_options.add_argument("--disable-ipc-flooding-protection")
+    chrome_options.add_argument("--remote-debugging-port=9222")
+
+    # 봇 감지 우회 강화
+    chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+    chrome_options.add_argument("--disable-features=VizDisplayCompositor")
+    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    chrome_options.add_experimental_option('useAutomationExtension', False)
+
+    # 더 실제적인 User-Agent
+    chrome_options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+
+    # GitHub Actions 환경에서 Chrome 바이너리 위치 설정
+    if os.environ.get('GITHUB_ACTIONS'):
+        chrome_options.binary_location = "/usr/bin/google-chrome"
+        print("GitHub Actions 환경에서 실행 중")
+
+    try:
+        driver_path = ChromeDriverManager().install()
+        print(f"ChromeDriver 경로: {driver_path}")
+        service = Service(driver_path)
+    except Exception as e:
+        print(f"ChromeDriverManager 에러: {e}")
+        if os.environ.get('GITHUB_ACTIONS'):
+            import shutil
+            chromedriver_path = shutil.which('chromedriver')
+            if chromedriver_path:
+                print(f"시스템 ChromeDriver 발견: {chromedriver_path}")
+                service = Service(chromedriver_path)
+            else:
+                print("ChromeDriver를 찾을 수 없습니다. 기본 Service 사용")
+                service = Service()
+        else:
+            service = Service()
+
+    try:
+        driver = webdriver.Chrome(service=service, options=chrome_options)
+        # 봇 감지 우회
+        driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+        print("Chrome WebDriver 초기화 성공")
+    except Exception as e:
+        print(f"Chrome WebDriver 초기화 실패: {e}")
+        raise
+
+    urls = [
         "https://www.youtube.com/@MBCNEWS11/videos",
         "https://www.youtube.com/@sbsnews8/videos",
         "https://www.youtube.com/@newskbs/videos",
         "https://www.youtube.com/@jtbc_news/videos",
         "https://www.youtube.com/@ytnnews24/videos",
-    ]'''
-
-    #테스트 코드
-    crawl_until = 1
-    urls = [
-        "https://www.youtube.com/@MBCNEWS11/videos",
     ]
 
     try:
+        total_processed_count = 0
+
         for url in urls:
+            print(f"URL 접속: {url}")
             driver.get(url)
-            wait = WebDriverWait(driver, 10)
-            wait.until(EC.presence_of_element_located((By.TAG_NAME, "ytd-rich-item-renderer")))
+
+            # 충분한 로딩 시간 확보
+            print("페이지 로딩 대기 중...")
+            time.sleep(10)  # 기본 10초 대기
+
+            # JavaScript 완전 로딩 확인
+            wait = WebDriverWait(driver, 30)
+            try:
+                # 페이지 완전 로딩 대기
+                wait.until(lambda driver: driver.execute_script("return document.readyState") == "complete")
+                print("페이지 로딩 완료")
+
+                # YouTube 비디오 컨테이너 로딩 대기
+                wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "ytd-rich-item-renderer")))
+                print("비디오 컨테이너 로딩 완료")
+
+            except Exception as e:
+                print(f"페이지 로딩 대기 중 에러: {e}")
+
+            # 추가 JavaScript 실행 대기
+            time.sleep(5)
+
+            # ===== 첫 번째 코드의 while 스크롤 로직 적용 =====
             SCROLL_PAUSE_TIME = 2
             last_height = driver.execute_script("return document.documentElement.scrollHeight")
 
-            #정해진 비디오 갯수가 로딩될 때까지 무한 스크롤링
+            print(f"crawl_until 날짜까지 스크롤링 시작... (목표: {crawl_until}일 전)")
+
+            # 정해진 날짜까지 무한 스크롤링
             while True:
                 driver.execute_script("window.scrollTo(0, document.documentElement.scrollHeight);")
                 time.sleep(SCROLL_PAUSE_TIME)
-                
+
+                # 현재 로딩된 비디오들 확인
                 current_videos = driver.find_elements(By.CSS_SELECTOR, "ytd-rich-item-renderer")
-                elements = current_videos[-1].find_elements(By.CSS_SELECTOR, "span")
-                extracted_date = 0
-                for span in elements:
-                    span_text = span.text.strip()
-                    
-                    if any(keyword in span_text for keyword in ['일 전']):
-                        extracted_date = int(re.search(r'(\d+)', span_text).group(1))
-                
-                if extracted_date >= crawl_until:
-                    print(f"로딩 성공!")
-                    break
-                
+
+                if current_videos:
+                    # 마지막 비디오의 날짜 확인
+                    last_video = current_videos[-1]
+                    elements = last_video.find_elements(By.CSS_SELECTOR, "span")
+                    extracted_date = 0
+
+                    for span in elements:
+                        span_text = span.text.strip()
+
+                        # 한국어 날짜 패턴 확인
+                        if any(keyword in span_text for keyword in ['일 전']):
+                            match = re.search(r'(\d+)', span_text)
+                            if match:
+                                extracted_date = int(match.group(1))
+                                print(f"마지막 비디오 날짜: {extracted_date}일 전")
+                                break
+
+                        # 영어 날짜 패턴도 확인 (필요시)
+                        elif 'day' in span_text.lower() and 'ago' in span_text.lower():
+                            match = re.search(r'(\d+)', span_text)
+                            if match:
+                                extracted_date = int(match.group(1))
+                                print(f"마지막 비디오 날짜: {extracted_date} days ago")
+                                break
+
+                    # crawl_until 날짜에 도달했는지 확인
+                    if extracted_date >= crawl_until:
+                        print(f"목표 날짜 도달! ({extracted_date}일 전 >= {crawl_until}일 전)")
+                        print(f"총 {len(current_videos)}개 비디오 로딩 완료")
+                        break
+
+                # 스크롤이 더 이상 되지 않는지 확인
                 new_height = driver.execute_script("return document.documentElement.scrollHeight")
                 if new_height == last_height:
                     print("더 이상 로드할 영상이 없습니다.")
                     break
-                
+
                 last_height = new_height
-            
-            #스크롤링으로 로딩한 비디오 수가 만족할때 데이터 크롤링
+                print(f"스크롤 계속... 현재 비디오 수: {len(current_videos) if current_videos else 0}")
+
+            # ===== 스크롤링 완료 후 모든 비디오 처리 =====
             video_containers = driver.find_elements(By.CSS_SELECTOR, "ytd-rich-item-renderer")
-            channel_element = driver.find_element(By.CSS_SELECTOR, "span.yt-core-attributed-string.yt-core-attributed-string--white-space-pre-wrap")
-            channel_name = channel_element.text.strip()
+            print(f"최종 처리할 비디오 컨테이너 수: {len(video_containers)}")
 
-            for container in video_containers:
-                title_text = ""
-                video_url = ""
-                view_count = 0
-                upload_date = None
-                publisher = channel_name
+            if not video_containers:
+                print("비디오 컨테이너를 찾을 수 없습니다.")
+                continue
 
-                title_element = container.find_element(By.CSS_SELECTOR, "#video-title")
-                title_text = title_element.text.strip()
-                title_text = re.sub(r'\[.*?\]', '', title_text)
-                title_text = re.sub(r'\(.*?\)', '', title_text)
-                title_text = re.sub(r'\s*/.*$', '', title_text)
-                title_text = re.sub(r'\s*ㅣ.*$', '', title_text)
-                title_text = re.sub(r'\s*｜.*$', '', title_text)
-                title_text = re.sub(r'\s*\|.*$', '', title_text)
-                title_text = re.sub(r'\s*#.*$', '', title_text)
-                title_text = re.sub(r'\d{4}년\s*\d{1,2}월\s*\d{1,2}일', '', title_text)
-                title_text = re.sub(r'\d{4}\.\s*\d{1,2}\.\s*\d{1,2}', '', title_text)
-                title_text = re.sub(r'\s*(다시보기|뉴스룸|뉴스데스크)\s*', ' ', title_text)
-                title_text = re.sub(r'\s+', ' ', title_text).strip()
-                video_url = container.find_element(By.CSS_SELECTOR, '#video-title-link').get_attribute('href')
-                metadatas = container.find_elements(By.CSS_SELECTOR, "span")
-                for span in metadatas:
-                    span_text = span.text.strip()
+            channel_name = driver.find_element(By.CSS_SELECTOR, "h1.dynamicTextViewModelH1 span.yt-core-attributed-string").text.strip()
+            processed_count = 0
 
-                    # 조회수 추출
-                    if ('조회수' in span_text or '회' in span_text) and view_count == 0:
-                        view_count = trans_view_count(span_text)
-                    
-                    # 업로드 날짜 추출
-                    elif any(keyword in span_text for keyword in ['일 전', '주 전', '개월 전', '년 전', '시간 전', '분 전']) and upload_date is None:
-                        upload_date = trans_upload_date(span_text)
-                now = timezone.now()
-                crawled_data = {
-                    "title": title_text,
-                    "publisher": publisher,
-                    "url": video_url,
-                    "view_count": view_count,
-                    "published_date": upload_date,
-                    "crawled_at": now,
-                }
-                db_save(crawled_data)
+            # 모든 비디오 처리 (crawl_until 날짜 조건에 맞는 것만)
+            for i, container in enumerate(video_containers):
+                try:
+                    print(f"\n=== 비디오 {i+1} 처리 중 ===")
+
+                    # 제목 추출
+                    title_element = container.find_element(By.CSS_SELECTOR, "#video-title")
+                    title_text = title_element.text.strip()
+
+                    if not title_text:
+                        print("제목이 없는 비디오, 건너뜀")
+                        continue
+
+                    # 제목 정리
+                    original_title = title_text
+                    title_text = re.sub(r'\[.*?\]', '', title_text)
+                    title_text = re.sub(r'\(.*?\)', '', title_text)
+                    title_text = re.sub(r'\s*/.*$', '', title_text)
+                    title_text = re.sub(r'\s*ㅣ.*$', '', title_text)
+                    title_text = re.sub(r'\s*｜.*$', '', title_text)
+                    title_text = re.sub(r'\s*\|.*$', '', title_text)
+                    title_text = re.sub(r'\s*#.*$', '', title_text)
+                    title_text = re.sub(r'\d{4}년\s*\d{1,2}월\s*\d{1,2}일', '', title_text)
+                    title_text = re.sub(r'\d{4}\.\s*\d{1,2}\.\s*\d{1,2}', '', title_text)
+                    title_text = re.sub(r'\s*(다시보기|뉴스룸|뉴스데스크)\s*', ' ', title_text)
+                    title_text = re.sub(r'\s+', ' ', title_text).strip()
+
+                    print(f"원본 제목: {original_title}")
+                    print(f"정리된 제목: {title_text}")
+
+                    # URL 추출
+                    video_url = container.find_element(By.CSS_SELECTOR, '#video-title-link').get_attribute('href')
+                    print(f"비디오 URL: {video_url}")
+
+                    # 메타데이터 추출
+                    view_count = 0
+                    upload_date = None
+                    video_date_days = 0  # 비디오의 날짜 (일 단위)
+
+                    print("메타데이터 추출 시작...")
+
+                    # 기본 span 요소들에서 메타데이터 추출
+                    metadatas = container.find_elements(By.CSS_SELECTOR, "span")
+                    print(f"기본 span 요소 개수: {len(metadatas)}")
+
+                    for j, span in enumerate(metadatas):
+                        span_text = span.text.strip()
+                        if not span_text:
+                            continue
+
+                        print(f"  Span {j}: '{span_text}'")
+
+                        # 조회수 추출 (한국어/영어)
+                        if (('조회수' in span_text or '회' in span_text or 'views' in span_text.lower() or 'view' in span_text.lower()) 
+                            and view_count == 0):
+                            try:
+                                view_count = trans_view_count(span_text)
+                                print(f"  --> 조회수 추출 성공: {view_count}")
+                            except Exception as e:
+                                print(f"  --> 조회수 추출 실패: {e}")
+
+                        # 업로드 날짜 추출 (한국어/영어)
+                        elif (any(keyword in span_text for keyword in ['일 전', '주 전', '개월 전', '년 전', '시간 전', '분 전']) or
+                              any(keyword in span_text.lower() for keyword in ['ago', 'hour', 'day', 'week', 'month', 'year', 'minute'])) and upload_date is None:
+                            try:
+                                upload_date = trans_upload_date(span_text)
+
+                                # 날짜가 crawl_until보다 오래된 경우 체크를 위해 일수 계산
+                                if '일 전' in span_text:
+                                    match = re.search(r'(\d+)', span_text)
+                                    if match:
+                                        video_date_days = int(match.group(1))
+                                elif 'day' in span_text.lower() and 'ago' in span_text.lower():
+                                    match = re.search(r'(\d+)', span_text)
+                                    if match:
+                                        video_date_days = int(match.group(1))
+
+                                print(f"  --> 업로드 날짜 추출 성공: {upload_date} ({video_date_days}일 전)")
+                            except Exception as e:
+                                print(f"  --> 업로드 날짜 추출 실패: {e}")
+
+                    # crawl_until 조건 확인 - 해당 날짜보다 오래된 비디오는 건너뛰기
+                    if video_date_days > crawl_until:
+                        print(f"비디오가 크롤링 범위를 벗어남 ({video_date_days}일 전 > {crawl_until}일 전), 건너뛰기")
+                        continue
+
+                    # 추가 선택자로 메타데이터 검색 (필요시)
+                    if view_count == 0 or upload_date is None:
+                        print("추가 선택자로 메타데이터 검색...")
+                        additional_selectors = [
+                            "div#metadata span",
+                            "ytd-video-meta-block span", 
+                            "#metadata-line span",
+                            "div#details span",
+                            "[class*='metadata'] span"
+                        ]
+
+                        for selector in additional_selectors:
+                            try:
+                                elements = container.find_elements(By.CSS_SELECTOR, selector)
+
+                                for elem in elements:
+                                    text = elem.text.strip()
+                                    if not text:
+                                        continue
+
+                                    # 조회수 추출
+                                    if (('조회수' in text or '회' in text or 'views' in text.lower() or 'view' in text.lower()) 
+                                        and view_count == 0):
+                                        try:
+                                            view_count = trans_view_count(text)
+                                            print(f"    --> 조회수 추출: {view_count}")
+                                        except:
+                                            pass
+
+                                    # 업로드 날짜 추출
+                                    elif (any(keyword in text for keyword in ['일 전', '주 전', '개월 전', '년 전', '시간 전', '분 전']) or
+                                          any(keyword in text.lower() for keyword in ['ago', 'hour', 'day', 'week', 'month', 'year', 'minute'])) and upload_date is None:
+                                        try:
+                                            upload_date = trans_upload_date(text)
+                                            print(f"    --> 날짜 추출: {upload_date}")
+                                        except:
+                                            pass
+
+                            except Exception as e:
+                                continue
+
+                    # 기본값 설정
+                    if upload_date is None:
+                        upload_date = timezone.now().date()
+                        print(f"기본 업로드 날짜 설정: {upload_date}")
+
+                    if view_count == 0:
+                        print("조회수를 찾을 수 없어 0으로 설정")
+
+                    # 데이터 저장
+                    now = timezone.now()
+                    crawled_data = {
+                        "title": title_text,
+                        "publisher": channel_name,
+                        "url": video_url,
+                        "view_count": view_count,
+                        "published_date": upload_date,
+                        "crawled_at": now,
+                    }
+
+                    print(f"최종 데이터: {crawled_data}")
+                    success = db_save(crawled_data)
+
+                    if success:
+                        processed_count += 1
+                        print(f"비디오 {i+1} 저장 완료")
+                    else:
+                        print(f"비디오 {i+1} 저장 실패")
+
+                except Exception as e:
+                    print(f"비디오 {i+1} 처리 중 오류: {e}")
+                    continue
+
+            print(f"\n{url}에서 {processed_count}개 비디오 처리 완료")
+            total_processed_count += processed_count
 
         return JsonResponse({
-                'status': 'success',
-                'count': len(video_containers)
-            })
-    
+            'status': 'success',
+            'count': total_processed_count
+        })
+
     except Exception as e:
+        print(f"크롤링 중 오류 발생: {str(e)}")
         return JsonResponse({
             'status': 'error',
             'message': f'크롤링 중 오류가 발생했습니다: {str(e)}'
         })
-        
+
     finally:
         driver.quit()
+        print("Chrome WebDriver 종료")
+
+
+def trans_view_count(view):
+    """조회수 텍스트를 숫자로 변환 (한국어/영어 지원)"""
+    print(f"조회수 변환 입력: '{view}'")
     
-
-def trans_view_count(view) :
-    """
-    조회수 텍스트를 숫자로 변환
-    """
-    view_text = view.replace('조회수', '').replace('회', '').strip()
-    view_text = view_text.replace('.', '')
-
-    if '만' in view_text:
-        number_str = int(view_text.replace('만', ''))
-        number = float(number_str) 
-        return int(number * 10000) 
-    elif '천' in view_text:
-        number_str = view_text.replace('천', '')
-        number = float(number_str)
-        return int(number * 1000)
-    else:
-        number = int(view_text)
-        return number
-
+    view_text = view.replace('조회수', '').replace('회', '').replace('views', '').replace('view', '').strip()
+    view_text = view_text.replace('.', '').replace(',', '')
     
+    try:
+        # 영어 처리
+        if 'K' in view_text.upper():
+            number_str = view_text.upper().replace('K', '')
+            number = float(number_str) 
+            result = int(number * 1000)
+        elif 'M' in view_text.upper():
+            number_str = view_text.upper().replace('M', '')
+            number = float(number_str)
+            result = int(number * 1000000)
+        elif 'B' in view_text.upper():
+            number_str = view_text.upper().replace('B', '')
+            number = float(number_str)
+            result = int(number * 1000000000)
+        # 한국어 처리
+        elif '만' in view_text:
+            number_str = view_text.replace('만', '')
+            number = float(number_str) 
+            result = int(number * 10000)
+        elif '천' in view_text:
+            number_str = view_text.replace('천', '')
+            number = float(number_str)
+            result = int(number * 1000)
+        else:
+            result = int(view_text)
+        
+        print(f"조회수 변환 결과: {result}")
+        return result
+    except Exception as e:
+        print(f"조회수 변환 실패: {e}")
+        return 0
+
+
 def trans_upload_date(date_text):
-    """
-    업로드 날짜 텍스트로 업로드 시간 계산
-    """
+    """업로드 날짜 텍스트로 업로드 시간 계산 (한국어/영어 지원)"""
+    print(f"날짜 변환 입력: '{date_text}'")
+    
     now = timezone.now()
-    time = int(re.findall(r'\d+', date_text)[0])
+    
+    try:
+        numbers = re.findall(r'\d+', date_text)
+        if not numbers:
+            return now.date()
+            
+        time_value = int(numbers[0])
 
-    if '분 전' in date_text:
-        upload_time = now - datetime.timedelta(minutes=time)
-    elif '시간 전' in date_text:
-        upload_time = now - datetime.timedelta(hours=time)
-    elif '일 전' in date_text:
-        upload_time = now - datetime.timedelta(days=time)
-    elif '주 전' in date_text:
-        upload_time = now - datetime.timedelta(weeks=time)
-    else:
+        # 영어 처리
+        if 'minute' in date_text.lower() or 'min' in date_text.lower():
+            upload_time = now - datetime.timedelta(minutes=time_value)
+        elif 'hour' in date_text.lower():
+            upload_time = now - datetime.timedelta(hours=time_value)
+        elif 'day' in date_text.lower():
+            upload_time = now - datetime.timedelta(days=time_value)
+        elif 'week' in date_text.lower():
+            upload_time = now - datetime.timedelta(weeks=time_value)
+        elif 'month' in date_text.lower():
+            upload_time = now - datetime.timedelta(days=time_value * 30)
+        elif 'year' in date_text.lower():
+            upload_time = now - datetime.timedelta(days=time_value * 365)
+        # 한국어 처리
+        elif '분 전' in date_text:
+            upload_time = now - datetime.timedelta(minutes=time_value)
+        elif '시간 전' in date_text:
+            upload_time = now - datetime.timedelta(hours=time_value)
+        elif '일 전' in date_text:
+            upload_time = now - datetime.timedelta(days=time_value)
+        elif '주 전' in date_text:
+            upload_time = now - datetime.timedelta(weeks=time_value)
+        elif '개월 전' in date_text:
+            upload_time = now - datetime.timedelta(days=time_value * 30)
+        elif '년 전' in date_text:
+            upload_time = now - datetime.timedelta(days=time_value * 365)
+        else:
+            return now.date()
+
+        result = upload_time.date()
+        print(f"날짜 변환 결과: {result}")
+        return result
+        
+    except Exception as e:
+        print(f"날짜 변환 실패: {e}")
         return now.date()
-
-    return upload_time.date()
 
 
 def db_save(data):
-    backend_url = 'http://127.0.0.1:8000/news/headline/'
-
     try:
+        # serializer에 전달할 데이터 포맷 정리
         api_data = {
             "title": data['title'],
             "publisher": data['publisher'],
             "url": data['url'],
-            "published_date": data['published_date'].isoformat(),
+            "published_date": data['published_date'].isoformat() if hasattr(data['published_date'], 'isoformat') else str(data['published_date']),
             "view_count": data['view_count'],
             "crawled_at": data['crawled_at'].isoformat()
         }
         
-        response = requests.post(
-            backend_url, 
-            json=api_data,
-            headers={'Content-Type': 'application/json'},
-        )
+        print(f"Serializer에 전달할 데이터: {api_data}")
         
-        if response.status_code in [200, 201]:
+        # HeadlineSerializer 사용해서 데이터 저장
+        serializer = HeadlineSerializer(data=api_data)
+        
+        if serializer.is_valid():
+            # 저장 성공
+            instance = serializer.save()
+            print(f"데이터 저장 성공 - ID: {instance.id}")
             return True
         else:
-            print(f"Failed to send data. Status code: {response.status_code}")
+            # 유효성 검사 실패
+            print(f"Serializer 유효성 검사 실패: {serializer.errors}")
             return False
         
     except Exception as e:
-        print(f"Unexpected error in db_save: {e}")
+        print(f"db_save에서 예상치 못한 오류: {e}")
         return False

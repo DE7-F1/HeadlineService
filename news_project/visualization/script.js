@@ -4,8 +4,8 @@ const API_BASE_URL = (() => {
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
     return 'http://127.0.0.1:8000';
   }
-  // 배포환경: 같은 도메인의 백엔드 서버
-  return window.location.origin;
+  // 배포환경: 같은 IP의 8000번 포트 (백엔드 서버)
+  return `http://${window.location.hostname}:8000`;
 })();
 
 async function fetchNews(keyword) {
